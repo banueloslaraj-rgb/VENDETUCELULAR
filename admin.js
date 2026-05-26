@@ -1,0 +1,234 @@
+// ===== CONFIGURACIÓN DE SUPABASE =====
+const SUPABASE_URL = 'https://yczegabspeywaaxsnnoj.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InljemVnYWJzcGV5d2FheHNubm9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4MDc3OTksImV4cCI6MjA5NTM4Mzc5OX0.tdVSoJTjqdwX8wyqnbdNH6mXESDPPIdC_c6bg3kKm5g';
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ===== CONTRASEÑA DEL ADMIN (CAMBIA ESTO POR LA QUE QUIERAS) =====
+const ADMIN_PASSWORD = 'admin123';  // 👈 CAMBIA ESTA CONTRASEÑA
+
+let solicitudes = [];
+let filtroActual = 'todas';
+
+// Login con contraseña fija
+function loginAdmin() {
+    const password = document.getElementById('adminPassword').value;
+    
+    if (!password) {
+        Swal.fire('Error', 'Ingresa la contraseña', 'error');
+        return;
+    }
+    
+    if (password === ADMIN_PASSWORD) {
+        // Guardar en sessionStorage para mantener la sesión
+        sessionStorage.setItem('adminLoggedIn', 'true');
+        
+        Swal.fire('Éxito', 'Bienvenido al panel de administración', 'success');
+        document.getElementById('loginPanel').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
+        cargarSolicitudes();
+        suscribirCambios();
+    } else {
+        Swal.fire('Error', 'Contraseña incorrecta', 'error');
+    }
+}
+
+// Logout
+function logoutAdmin() {
+    sessionStorage.removeItem('adminLoggedIn');
+    document.getElementById('loginPanel').style.display = 'block';
+    document.getElementById('adminPanel').style.display = 'none';
+    document.getElementById('adminPassword').value = '';
+}
+
+// Verificar si ya hay sesión
+function checkSession() {
+    const isLoggedIn = sessionStorage.getItem('adminLoggedIn');
+    if (isLoggedIn === 'true') {
+        document.getElementById('loginPanel').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
+        cargarSolicitudes();
+        suscribirCambios();
+    }
+}
+
+// Suscribirse a cambios en tiempo real
+function suscribirCambios() {
+    supabase
+        .channel('solicitudes_changes')
+        .on('postgres_changes', 
+            { event: '*', schema: 'public', table: 'solicitudes' },
+            () => cargarSolicitudes()
+        )
+        .subscribe();
+}
+
+// Cargar solicitudes
+async function cargarSolicitudes() {
+    const { data, error } = await supabase
+        .from('solicitudes')
+        .select('*')
+        .order('created_at', { ascending: false });
+    
+    if (error) {
+        console.error('Error:', error);
+        Swal.fire('Error', 'No se pudieron cargar las solicitudes', 'error');
+        return;
+    }
+    
+    solicitudes = data;
+    actualizarContador();
+    mostrarSolicitudes();
+}
+
+// Actualizar contador
+function actualizarContador() {
+    const pendientes = solicitudes.filter(s => s.estado === 'pendiente').length;
+    const contadorDiv = document.getElementById('contadorPendientes');
+    contadorDiv.innerHTML = `
+        <strong style="color: #00ff88;">📊 Resumen:</strong> 
+        ${pendientes} solicitud(es) pendiente(s) de respuesta
+    `;
+}
+
+// Mostrar solicitudes
+function mostrarSolicitudes() {
+    const container = document.getElementById('solicitudesContainer');
+    let solicitudesFiltradas = solicitudes;
+    
+    if (filtroActual !== 'todas') {
+        solicitudesFiltradas = solicitudes.filter(s => s.estado === filtroActual);
+    }
+    
+    if (solicitudesFiltradas.length === 0) {
+        container.innerHTML = '<div style="text-align: center; grid-column: 1/-1; color: #888;">No hay solicitudes para mostrar</div>';
+        return;
+    }
+    
+    container.innerHTML = solicitudesFiltradas.map(solicitud => `
+        <div class="solicitud-card" style="background:#111; border-radius:15px; padding:20px; border:1px solid #2a2a2a; margin-bottom:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding-bottom:10px; border-bottom:1px solid #2a2a2a;">
+                <span style="color:#00ff88; font-weight:bold;">#${solicitud.id}</span>
+                <span style="padding:4px 12px; border-radius:20px; font-size:0.8rem; background:${solicitud.estado === 'pendiente' ? '#ff6600' : '#00ff88'}; color:${solicitud.estado === 'pendiente' ? 'white' : 'black'}">
+                    ${solicitud.estado === 'pendiente' ? '⏳ Pendiente' : '✅ Respondida'}
+                </span>
+            </div>
+            <div>
+                <p><strong>👤 Nombre:</strong> ${solicitud.nombre}</p>
+                <p><strong>📧 Email:</strong> ${solicitud.email}</p>
+                <p><strong>📱 Teléfono:</strong> ${solicitud.telefono}</p>
+                <p><strong>📱 Equipo:</strong> ${solicitud.marca} ${solicitud.modelo}</p>
+                <p><strong>🔧 Condición:</strong> ${solicitud.condicion}</p>
+                <p><strong>📝 Descripción:</strong> ${solicitud.descripcion || 'Sin descripción'}</p>
+                <p><strong>📅 Fecha:</strong> ${new Date(solicitud.created_at).toLocaleString()}</p>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin:15px 0;">
+                ${solicitud.fotos && solicitud.fotos.length > 0 ? 
+                    solicitud.fotos.map(foto => `
+                        <div style="width:80px; height:80px; border-radius:8px; overflow:hidden; cursor:pointer;" onclick="abrirModal('${foto}')">
+                            <img src="${foto}" style="width:100%; height:100%; object-fit:cover;">
+                        </div>
+                    `).join('') 
+                    : '<p>📷 Sin fotos</p>'}
+            </div>
+            ${solicitud.estado === 'respondida' ? `
+                <div style="margin-top:15px; padding:15px; background:#1a1a1a; border-radius:8px;">
+                    <strong style="color:#00ff88;">💬 Respuesta enviada:</strong>
+                    <p>💰 <strong>Precio ofertado:</strong> ${solicitud.precio_oferta}</p>
+                    <p>📝 <strong>Mensaje:</strong> ${solicitud.mensaje_respuesta}</p>
+                    <p>📅 <strong>Fecha respuesta:</strong> ${new Date(solicitud.fecha_respuesta).toLocaleString()}</p>
+                </div>
+            ` : `
+                <div style="margin-top:20px; padding-top:20px; border-top:1px solid #2a2a2a;">
+                    <input type="text" id="precio-${solicitud.id}" placeholder="💰 Precio ofertado (Ej: $5,000 MXN)" style="width:100%; padding:10px; margin-bottom:10px; background:#1a1a1a; border:1px solid #2a2a2a; border-radius:8px; color:white;">
+                    <textarea id="mensaje-${solicitud.id}" rows="2" placeholder="📝 Mensaje para el cliente..." style="width:100%; padding:10px; margin-bottom:10px; background:#1a1a1a; border:1px solid #2a2a2a; border-radius:8px; color:white;"></textarea>
+                    <button onclick="responderSolicitud(${solicitud.id})" style="width:100%; padding:12px; background:#00ff88; color:black; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">📤 Enviar respuesta por WhatsApp</button>
+                </div>
+            `}
+        </div>
+    `).join('');
+}
+
+// Responder solicitud
+async function responderSolicitud(id) {
+    const precio = document.getElementById(`precio-${id}`).value;
+    const mensaje = document.getElementById(`mensaje-${id}`).value;
+    
+    if (!precio || !mensaje) {
+        Swal.fire('Campos incompletos', 'Completa el precio y el mensaje', 'warning');
+        return;
+    }
+    
+    const solicitud = solicitudes.find(s => s.id === id);
+    
+    const confirmacion = await Swal.fire({
+        title: '¿Enviar respuesta?',
+        text: `Enviarás oferta de ${precio} a ${solicitud.nombre}`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#00ff88',
+        confirmButtonText: 'Sí, enviar',
+        cancelButtonText: 'Cancelar'
+    });
+    
+    if (!confirmacion.isConfirmed) return;
+    
+    // Actualizar en Supabase
+    const { error } = await supabase
+        .from('solicitudes')
+        .update({
+            estado: 'respondida',
+            precio_oferta: precio,
+            mensaje_respuesta: mensaje,
+            fecha_respuesta: new Date().toISOString()
+        })
+        .eq('id', id);
+    
+    if (error) {
+        Swal.fire('Error', 'No se pudo guardar la respuesta', 'error');
+        return;
+    }
+    
+    // Enviar WhatsApp al cliente
+    const mensajeWhatsApp = `*JL PHONE BUYBACK* - Respuesta a tu solicitud #${solicitud.id}\n\nHola ${solicitud.nombre},\n\nHemos evaluado tu equipo *${solicitud.marca} ${solicitud.modelo}*.\n\n💰 *Precio ofertado:* ${precio}\n\n📝 *Comentario:* ${mensaje}\n\n¡Esperamos tu respuesta! Contáctanos al 3111063251.\n\nGracias por confiar en JL PHONE BUYBACK. 🙌`;
+    
+    const telefonoLimpio = solicitud.telefono.replace(/\D/g, '');
+    const urlWhatsApp = `https://wa.me/52${telefonoLimpio}?text=${encodeURIComponent(mensajeWhatsApp)}`;
+    
+    // Abrir WhatsApp en nueva ventana
+    window.open(urlWhatsApp, '_blank');
+    
+    Swal.fire({
+        title: '¡Respuesta enviada!',
+        text: `Se abrirá WhatsApp para enviar la oferta a ${solicitud.nombre}`,
+        icon: 'success',
+        confirmButtonColor: '#00ff88'
+    });
+    
+    cargarSolicitudes(); // Recargar
+}
+
+// Abrir modal de fotos
+function abrirModal(imgSrc) {
+    const modal = document.getElementById('modal');
+    const modalImg = document.getElementById('modalImg');
+    modal.style.display = 'flex';
+    modalImg.src = imgSrc;
+}
+
+function cerrarModal() {
+    document.getElementById('modal').style.display = 'none';
+}
+
+// Event listeners para filtros
+document.querySelectorAll('.filtro-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filtroActual = btn.dataset.filtro;
+        mostrarSolicitudes();
+    });
+});
+
+// Iniciar - verificar sesión
+checkSession();

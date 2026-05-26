@@ -1,0 +1,34 @@
+-- Tabla de solicitudes
+CREATE TABLE solicitudes (
+  id SERIAL PRIMARY KEY,
+  nombre VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL,
+  telefono VARCHAR(20) NOT NULL,
+  marca VARCHAR(50) NOT NULL,
+  modelo VARCHAR(100) NOT NULL,
+  condicion TEXT NOT NULL,
+  descripcion TEXT,
+  fotos TEXT[] DEFAULT '{}',
+  estado VARCHAR(20) DEFAULT 'pendiente',
+  precio_oferta VARCHAR(50),
+  mensaje_respuesta TEXT,
+  fecha_respuesta TIMESTAMP,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Políticas de seguridad
+ALTER TABLE solicitudes ENABLE ROW LEVEL SECURITY;
+
+-- Política para insertar (público)
+CREATE POLICY "Permitir insertar solicitudes" ON solicitudes
+  FOR INSERT WITH CHECK (true);
+
+-- Política para leer solo autenticados (admin)
+CREATE POLICY "Solo admin puede leer" ON solicitudes
+  FOR SELECT USING (auth.role() = 'authenticated');
+
+-- Política para actualizar solo admin
+CREATE POLICY "Solo admin puede actualizar" ON solicitudes
+  FOR UPDATE USING (auth.role() = 'authenticated');
+
+

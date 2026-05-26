@@ -3,134 +3,159 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>JL PHONE BUYBACK | Compramos iPhone Usados y Semi Nuevos</title>
-
 <meta name="description" content="Compramos iPhone usados y semi nuevos con o sin detalle. Compra segura y cotización rápida por WhatsApp.">
-
 <link rel="stylesheet" href="styles.css">
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-
 <body>
 
 <header class="hero">
-
 <div class="overlay"></div>
-
 <div class="hero-content">
-
 <h1>JL PHONE BUYBACK</h1>
-
 <h2>Compramos iPhone Usados y Semi Nuevos</h2>
-
 <p>Con o sin detalle</p>
-
-<div class="phone-number">
-📲 3111063251
+<div class="phone-number">📲 3111063251</div>
+<a href="https://wa.me/523111063251" class="btn">Cotizar por WhatsApp</a>
 </div>
-
-<a href="https://wa.me/523111063251" class="btn">
-Cotizar por WhatsApp
-</a>
-
-</div>
-
 </header>
 
+<!-- FORMULARIO DE SOLICITUD -->
+<section class="solicitud">
+<h2>Solicitar Venta de mi Equipo</h2>
+<p>Completa el formulario y te daremos una valoración en menos de 24 horas</p>
+<div class="form-container">
+<form id="ventaForm" enctype="multipart/form-data">
+<div class="form-group">
+<label for="nombre">Nombre completo *</label>
+<input type="text" id="nombre" name="nombre" required>
+</div>
+
+<div class="form-group">
+<label for="email">Correo electrónico *</label>
+<input type="email" id="email" name="email" required>
+</div>
+
+<div class="form-group">
+<label for="telefono">Teléfono / WhatsApp *</label>
+<input type="tel" id="telefono" name="telefono" placeholder="Ej: 3111063251" required>
+</div>
+
+<div class="form-group">
+<label for="marca">Marca del equipo *</label>
+<select id="marca" name="marca" required>
+<option value="">Selecciona</option>
+<option value="iPhone">iPhone</option>
+<option value="Samsung">Samsung</option>
+<option value="Xiaomi">Xiaomi</option>
+<option value="Huawei">Huawei</option>
+<option value="Google Pixel">Google Pixel</option>
+<option value="Motorola">Motorola</option>
+<option value="Otro">Otro</option>
+</select>
+</div>
+
+<div class="form-group">
+<label for="modelo">Modelo exacto *</label>
+<input type="text" id="modelo" name="modelo" placeholder="Ej: iPhone 13 Pro, Samsung S23" required>
+</div>
+
+<div class="form-group">
+<label for="condicion">Condición del equipo *</label>
+<select id="condicion" name="condicion" required>
+<option value="">Selecciona</option>
+<option value="Semi nuevo (sin detalles)">Semi nuevo (sin detalles)</option>
+<option value="Usado - buen estado">Usado - buen estado</option>
+<option value="Pantalla dañada">Pantalla dañada</option>
+<option value="Batería baja">Batería baja</option>
+<option value="Con golpes o rayones">Con golpes o rayones</option>
+<option value="No enciende / falla grave">No enciende / falla grave</option>
+</select>
+</div>
+
+<div class="form-group">
+<label for="descripcion">Descripción adicional</label>
+<textarea id="descripcion" name="descripcion" rows="3" placeholder="Describe cualquier detalle adicional..."></textarea>
+</div>
+
+<div class="form-group">
+<label for="fotos">Fotos del equipo (máx 5 fotos) *</label>
+<input type="file" id="fotos" name="fotos" accept="image/*" multiple required>
+<small>Puedes seleccionar hasta 5 fotos (frontal, trasera, laterales, encendido)</small>
+</div>
+
+<div id="previewFotos" class="preview-fotos"></div>
+
+<button type="submit" class="btn-submit">Enviar solicitud</button>
+<div id="formMensaje" class="form-mensaje"></div>
+</form>
+</div>
+</section>
+
 <section class="benefits">
-
 <h2>¿Por qué vender con nosotros?</h2>
-
 <div class="cards">
-
 <div class="card">
 <h3>Compra Segura</h3>
 <p>Proceso confiable y atención directa.</p>
 </div>
-
 <div class="card">
 <h3>Pago al Momento</h3>
 <p>Evaluación rápida y oferta inmediata.</p>
 </div>
-
 <div class="card">
 <h3>Local Establecido</h3>
 <p>Atención seria y profesional.</p>
 </div>
-
 </div>
-
 </section>
 
 <section class="how">
-
 <h2>¿Cómo funciona?</h2>
-
 <div class="steps">
-
 <div class="step">
 <h3>1</h3>
-<p>Mándanos foto y modelo</p>
+<p>Envías tu solicitud con fotos</p>
 </div>
-
 <div class="step">
 <h3>2</h3>
-<p>Revisamos tu equipo</p>
+<p>Evaluamos tu equipo</p>
 </div>
-
 <div class="step">
 <h3>3</h3>
-<p>Recibe tu oferta</p>
+<p>Recibes oferta por WhatsApp/Email</p>
 </div>
-
 </div>
-
 </section>
 
 <section class="devices">
-
 <h2>¿Qué iPhone compramos?</h2>
-
 <div class="cards">
-
 <div class="card">Pantalla dañada</div>
 <div class="card">Batería baja</div>
 <div class="card">Semi nuevos</div>
 <div class="card">Con golpes o detalle</div>
 <div class="card">Modelos recientes y anteriores</div>
-
 </div>
-
 </section>
 
 <section class="notice">
-
 <h2>Importante</h2>
-
-<p>
-Pagamos precio de compra para reventa.
-No pagamos precio de nuevo ni precio de venta entre particulares.
-</p>
-
+<p>Pagamos precio de compra para reventa. No pagamos precio de nuevo ni precio de venta entre particulares.</p>
 </section>
 
 <footer>
-
 <h3>JL PHONE BUYBACK</h3>
-
 <p>WhatsApp: 3111063251</p>
-
 </footer>
 
-<a href="https://wa.me/523111063251" class="whatsapp-float">
-💬
-</a>
+<a href="https://wa.me/523111063251" class="whatsapp-float">💬</a>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
-
 </body>
 </html>
