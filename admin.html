@@ -4,16 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Panel Admin - JL PHONE BUYBACK</title>
-<link rel="stylesheet" href="styles.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     background: #0a0a0a;
     padding: 20px;
     font-family: 'Poppins', sans-serif;
 }
+
 .login-container {
     max-width: 400px;
     margin: 100px auto;
@@ -23,10 +29,12 @@ body {
     text-align: center;
     border: 1px solid #2a2a2a;
 }
+
 .login-container h2 {
     color: #00ff88;
     margin-bottom: 20px;
 }
+
 .login-container input {
     width: 100%;
     padding: 12px;
@@ -37,24 +45,70 @@ body {
     color: white;
     font-family: 'Poppins', sans-serif;
 }
+
 .login-container button {
     width: 100%;
     margin-top: 20px;
+    padding: 15px;
+    background: #00ff88;
+    color: #000;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
 }
+
+.login-container button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(0,255,136,0.4);
+}
+
 .admin-container {
     display: none;
     max-width: 1400px;
     margin: 0 auto;
 }
+
 .solicitudes-grid {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
+
+.filtro-btn {
+    padding: 10px 20px;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+}
+
 .filtro-btn.active {
     background: #00ff88 !important;
     color: black !important;
     border-color: #00ff88 !important;
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 15px;
+    background: #00ff88;
+    color: #000;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(0,255,136,0.4);
 }
 </style>
 </head>
@@ -65,20 +119,20 @@ body {
     <h2>🔐 Panel Administrativo</h2>
     <p style="color:#888; margin-bottom:20px;">Ingresa la contraseña de acceso</p>
     <input type="password" id="adminPassword" placeholder="Contraseña" required>
-    <button onclick="loginAdmin()" class="btn-submit">Acceder al panel</button>
+    <button id="loginBtn" class="btn-submit">Acceder al panel</button>
 </div>
 
 <!-- Panel Admin -->
 <div id="adminPanel" class="admin-container">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
         <h1 style="color: #00ff88; margin:0;">📱 JL PHONE BUYBACK - Admin</h1>
-        <button onclick="logoutAdmin()" style="padding: 10px 20px; background: #ff4444; color: white; border: none; border-radius: 8px; cursor: pointer;">Cerrar sesión</button>
+        <button id="logoutBtn" style="padding: 10px 20px; background: #ff4444; color: white; border: none; border-radius: 8px; cursor: pointer;">Cerrar sesión</button>
     </div>
     
     <div class="filtros" style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
-        <button class="filtro-btn active" data-filtro="todas" onclick="filtrarSolicitudes('todas', this)" style="padding: 10px 20px; background: #1a1a1a; border: 1px solid #2a2a2a; color: white; border-radius: 8px; cursor: pointer;">📋 Todas</button>
-        <button class="filtro-btn" data-filtro="pendiente" onclick="filtrarSolicitudes('pendiente', this)" style="padding: 10px 20px; background: #1a1a1a; border: 1px solid #2a2a2a; color: white; border-radius: 8px; cursor: pointer;">⏳ Pendientes</button>
-        <button class="filtro-btn" data-filtro="respondida" onclick="filtrarSolicitudes('respondida', this)" style="padding: 10px 20px; background: #1a1a1a; border: 1px solid #2a2a2a; color: white; border-radius: 8px; cursor: pointer;">✅ Respondidas</button>
+        <button class="filtro-btn active" data-filtro="todas">📋 Todas</button>
+        <button class="filtro-btn" data-filtro="pendiente">⏳ Pendientes</button>
+        <button class="filtro-btn" data-filtro="respondida">✅ Respondidas</button>
     </div>
     
     <div id="contadorPendientes" style="background:#111; padding:15px; border-radius:10px; margin-bottom:20px; text-align:center; border:1px solid #2a2a2a;">
@@ -91,11 +145,9 @@ body {
 </div>
 
 <!-- Modal para ver fotos -->
-<div id="modal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:1000; justify-content:center; align-items:center;">
-    <span onclick="cerrarModal()" style="position:absolute; top:20px; right:40px; color:white; font-size:40px; cursor:pointer;">&times;</span>
-    <div class="modal-content">
-        <img id="modalImg" src="" alt="Foto ampliada" style="max-width:90%; max-height:90%; border-radius:10px;">
-    </div>
+<div id="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:1000; justify-content:center; align-items:center;">
+    <span onclick="document.getElementById('modal').style.display='none'" style="position:absolute; top:20px; right:40px; color:white; font-size:40px; cursor:pointer;">&times;</span>
+    <img id="modalImg" src="" style="max-width:90%; max-height:90%; border-radius:10px;">
 </div>
 
 <script>
@@ -103,16 +155,17 @@ body {
 const SUPABASE_URL = 'https://yczegabspeywaaxsnnoj.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InljemVnYWJzcGV5d2FheHNubm9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4MDc3OTksImV4cCI6MjA5NTM4Mzc5OX0.tdVSoJTjqdwX8wyqnbdNH6mXESDPPIdC_c6bg3kKm5g';
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Crear cliente de Supabase
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// ===== CONTRASEÑA DEL ADMIN (CAMBIA AQUÍ LA CONTRASEÑA QUE QUIERAS) =====
+// ===== CONTRASEÑA DEL ADMIN =====
 const ADMIN_PASSWORD = 'admin123';
 
 let solicitudes = [];
 let filtroActual = 'todas';
 
 // Función de login
-function loginAdmin() {
+async function loginAdmin() {
     const password = document.getElementById('adminPassword').value;
     
     if (!password) {
@@ -122,7 +175,7 @@ function loginAdmin() {
     
     if (password === ADMIN_PASSWORD) {
         sessionStorage.setItem('adminLoggedIn', 'true');
-        Swal.fire('Éxito', 'Bienvenido al panel de administración', 'success');
+        await Swal.fire('Éxito', 'Bienvenido al panel de administración', 'success');
         document.getElementById('loginPanel').style.display = 'none';
         document.getElementById('adminPanel').style.display = 'block';
         cargarSolicitudes();
@@ -153,7 +206,7 @@ function checkSession() {
 
 // Suscribirse a cambios en tiempo real
 function suscribirCambios() {
-    supabase
+    supabaseClient
         .channel('solicitudes_changes')
         .on('postgres_changes', 
             { event: '*', schema: 'public', table: 'solicitudes' },
@@ -164,20 +217,21 @@ function suscribirCambios() {
 
 // Cargar solicitudes
 async function cargarSolicitudes() {
-    const { data, error } = await supabase
-        .from('solicitudes')
-        .select('*')
-        .order('created_at', { ascending: false });
-    
-    if (error) {
+    try {
+        const { data, error } = await supabaseClient
+            .from('solicitudes')
+            .select('*')
+            .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        solicitudes = data || [];
+        actualizarContador();
+        mostrarSolicitudes();
+    } catch (error) {
         console.error('Error:', error);
-        Swal.fire('Error', 'No se pudieron cargar las solicitudes', 'error');
-        return;
+        Swal.fire('Error', 'No se pudieron cargar las solicitudes: ' + error.message, 'error');
     }
-    
-    solicitudes = data;
-    actualizarContador();
-    mostrarSolicitudes();
 }
 
 // Actualizar contador
@@ -190,14 +244,6 @@ function actualizarContador() {
             ${pendientes} solicitud(es) pendiente(s) de respuesta
         `;
     }
-}
-
-// Filtrar solicitudes
-function filtrarSolicitudes(filtro, elemento) {
-    filtroActual = filtro;
-    document.querySelectorAll('.filtro-btn').forEach(btn => btn.classList.remove('active'));
-    elemento.classList.add('active');
-    mostrarSolicitudes();
 }
 
 // Mostrar solicitudes
@@ -234,7 +280,7 @@ function mostrarSolicitudes() {
             <div style="display:flex; flex-wrap:wrap; gap:10px; margin:15px 0;">
                 ${solicitud.fotos && solicitud.fotos.length > 0 ? 
                     solicitud.fotos.map(foto => `
-                        <div style="width:80px; height:80px; border-radius:8px; overflow:hidden; cursor:pointer;" onclick="abrirModal('${foto}')">
+                        <div style="width:80px; height:80px; border-radius:8px; overflow:hidden; cursor:pointer;" onclick="verFoto('${foto}')">
                             <img src="${foto}" style="width:100%; height:100%; object-fit:cover;">
                         </div>
                     `).join('') 
@@ -282,7 +328,7 @@ async function responderSolicitud(id) {
     
     if (!confirmacion.isConfirmed) return;
     
-    const { error } = await supabase
+    const { error } = await supabaseClient
         .from('solicitudes')
         .update({
             estado: 'respondida',
@@ -293,7 +339,7 @@ async function responderSolicitud(id) {
         .eq('id', id);
     
     if (error) {
-        Swal.fire('Error', 'No se pudo guardar la respuesta', 'error');
+        Swal.fire('Error', 'No se pudo guardar la respuesta: ' + error.message, 'error');
         return;
     }
     
@@ -314,20 +360,39 @@ async function responderSolicitud(id) {
     cargarSolicitudes();
 }
 
-// Abrir modal
-function abrirModal(imgSrc) {
+// Ver foto
+function verFoto(url) {
     const modal = document.getElementById('modal');
     const modalImg = document.getElementById('modalImg');
     modal.style.display = 'flex';
-    modalImg.src = imgSrc;
+    modalImg.src = url;
 }
 
-function cerrarModal() {
-    document.getElementById('modal').style.display = 'none';
-}
-
-// Iniciar - verificar sesión al cargar la página
+// Event listeners
 document.addEventListener('DOMContentLoaded', function() {
+    // Login button
+    const loginBtn = document.getElementById('loginBtn');
+    if (loginBtn) {
+        loginBtn.addEventListener('click', loginAdmin);
+    }
+    
+    // Logout button
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', logoutAdmin);
+    }
+    
+    // Filtros
+    document.querySelectorAll('.filtro-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            filtroActual = this.getAttribute('data-filtro');
+            mostrarSolicitudes();
+        });
+    });
+    
+    // Check session on start
     checkSession();
 });
 </script>
