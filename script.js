@@ -74,6 +74,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const fotosInput = document.getElementById('fotos');
         const previewContainer = document.getElementById('previewFotos');
         let archivosSeleccionados = [];
+        
+        // Variables para guardar las URLs de WhatsApp
+        let urlClienteWhatsApp = '';
+        let urlAdminWhatsApp = '';
 
         // Vista previa de fotos
         fotosInput.addEventListener('change', (e) => {
@@ -138,25 +142,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return urls;
         }
 
-        // Función para abrir WhatsApp (evita bloqueo de popups)
-        function abrirWhatsApp(url) {
-            // Intentar abrir en nueva pestaña
-            const ventana = window.open(url, '_blank');
-            
-            // Si falla (bloqueado), mostrar enlace manual
-            if (!ventana || ventana.closed || typeof ventana.closed === 'undefined') {
-                Swal.fire({
-                    title: '📱 Abrir WhatsApp',
-                    html: `Haz clic en el siguiente enlace:<br><br>
-                           <a href="${url}" target="_blank" style="color: #10b981; word-break: break-all;">Abrir WhatsApp</a><br><br>
-                           <small>Si no se abre automáticamente, haz clic en el enlace</small>`,
-                    icon: 'info',
-                    confirmButtonText: 'Cerrar',
-                    confirmButtonColor: '#10b981'
-                });
-            }
-        }
-
         // Enviar formulario
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -208,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 const solicitudId = data[0].id;
                 
-                // ===== ENVIAR WHATSAPP DE CONFIRMACIÓN AL CLIENTE =====
+                // ===== CREAR MENSAJES DE WHATSAPP =====
                 const mensajeClienteConfirmacion = `*JL PHONE BUYBACK* 🤝\n\n` +
                     `¡Hola ${solicitudData.nombre}! ✅\n\n` +
                     `Hemos recibido tu solicitud de venta #${solicitudId}\n\n` +
@@ -222,12 +207,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     `*JL PHONE BUYBACK* - Compra profesional de equipos usados`;
                 
                 const telefonoClienteLimpio = solicitudData.telefono.replace(/\D/g, '');
-                const whatsappClienteUrl = `https://wa.me/52${telefonoClienteLimpio}?text=${encodeURIComponent(mensajeClienteConfirmacion)}`;
+                urlClienteWhatsApp = `https://wa.me/52${telefonoClienteLimpio}?text=${encodeURIComponent(mensajeClienteConfirmacion)}`;
                 
-                // Abrir WhatsApp del cliente
-                abrirWhatsApp(whatsappClienteUrl);
-                
-                // Enviar WhatsApp al administrador
                 const mensajeAdmin = `🆕 *NUEVA SOLICITUD DE VENTA* #${solicitudId}\n\n` +
                     `👤 *Cliente:* ${solicitudData.nombre}\n` +
                     `📱 *Teléfono:* ${solicitudData.telefono}\n` +
@@ -239,21 +220,39 @@ document.addEventListener('DOMContentLoaded', function() {
                     `🔗 *Ver en admin:* ${window.location.origin}/admin.html`;
                 
                 const adminWhatsApp = '523111063251';
-                const whatsappAdminUrl = `https://wa.me/${adminWhatsApp}?text=${encodeURIComponent(mensajeAdmin)}`;
+                urlAdminWhatsApp = `https://wa.me/${adminWhatsApp}?text=${encodeURIComponent(mensajeAdmin)}`;
                 
-                // Abrir WhatsApp del admin
-                abrirWhatsApp(whatsappAdminUrl);
+                // Cerrar el loading
+                Swal.close();
                 
-                // Mensaje de éxito
-                await Swal.fire({
+                // Mostrar mensaje de éxito con botón para abrir WhatsApp
+                const result = await Swal.fire({
                     title: '¡Solicitud enviada!',
                     html: `Hemos recibido tu solicitud. <strong>Te contactaremos en breve</strong> por WhatsApp.<br><br>
                     <strong>Tu precio sugerido:</strong> <span style="color:#10b981; font-size:1.2rem;">$${parseInt(precioCliente).toLocaleString()} MXN</span><br><br>
-                    ✅ Se abrirá WhatsApp para confirmar tu solicitud.`,
+                    <strong>✓ Solicitud #${solicitudId}</strong>`,
                     icon: 'success',
-                    confirmButtonText: 'Entendido',
+                    confirmButtonText: '📱 Enviar confirmación por WhatsApp',
+                    cancelButtonText: 'Cerrar',
+                    showCancelButton: true,
                     confirmButtonColor: '#10b981'
                 });
+                
+                // Si el usuario hace clic en "Enviar confirmación por WhatsApp"
+                if (result.isConfirmed) {
+                    // Abrir WhatsApp del cliente
+                    window.open(urlClienteWhatsApp, '_blank');
+                    
+                    // Mostrar segundo mensaje
+                    await Swal.fire({
+                        title: '✅ Listo',
+                        html: `Se ha abierto WhatsApp para confirmar tu solicitud.<br><br>
+                        <small>Si no se abrió automáticamente, revisa que no tengas bloqueador de ventanas emergentes.</small>`,
+                        icon: 'info',
+                        confirmButtonText: 'Entendido',
+                        confirmButtonColor: '#10b981'
+                    });
+                }
                 
                 form.reset();
                 previewContainer.innerHTML = '';
@@ -264,7 +263,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire('Error', error.message, 'error');
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Enviar solicitud';
+                submitBtn.textContent = 'Enviar solicitud de venta';
             }
         });
     }
