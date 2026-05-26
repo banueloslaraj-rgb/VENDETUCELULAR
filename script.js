@@ -7,6 +7,27 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
+    // ===== SCROLL AL FORMULARIO =====
+    const scrollToFormBtn = document.getElementById('scrollToForm');
+    const formularioSection = document.getElementById('formularioSection');
+    
+    if (scrollToFormBtn && formularioSection) {
+        scrollToFormBtn.addEventListener('click', function() {
+            formularioSection.scrollIntoView({ behavior: 'smooth' });
+        });
+    }
+    
+    // ===== CAMBIAR TEXTO DEL BOTÓN DE AYUDA =====
+    const whatsappHelpBtn = document.getElementById('whatsappHelpBtn');
+    if (whatsappHelpBtn) {
+        whatsappHelpBtn.innerHTML = '❓ Ayuda por WhatsApp';
+    }
+    
+    const whatsappFloatBtn = document.getElementById('whatsappFloatBtn');
+    if (whatsappFloatBtn) {
+        whatsappFloatBtn.innerHTML = '❓';
+    }
+    
     // Animaciones
     const cards = document.querySelectorAll('.card');
     const steps = document.querySelectorAll('.step');
@@ -117,6 +138,25 @@ document.addEventListener('DOMContentLoaded', function() {
             return urls;
         }
 
+        // Función para abrir WhatsApp (evita bloqueo de popups)
+        function abrirWhatsApp(url) {
+            // Intentar abrir en nueva pestaña
+            const ventana = window.open(url, '_blank');
+            
+            // Si falla (bloqueado), mostrar enlace manual
+            if (!ventana || ventana.closed || typeof ventana.closed === 'undefined') {
+                Swal.fire({
+                    title: '📱 Abrir WhatsApp',
+                    html: `Haz clic en el siguiente enlace:<br><br>
+                           <a href="${url}" target="_blank" style="color: #10b981; word-break: break-all;">Abrir WhatsApp</a><br><br>
+                           <small>Si no se abre automáticamente, haz clic en el enlace</small>`,
+                    icon: 'info',
+                    confirmButtonText: 'Cerrar',
+                    confirmButtonColor: '#10b981'
+                });
+            }
+        }
+
         // Enviar formulario
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -168,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 const solicitudId = data[0].id;
                 
-                // ===== NUEVO: Enviar WhatsApp de confirmación AL CLIENTE =====
+                // ===== ENVIAR WHATSAPP DE CONFIRMACIÓN AL CLIENTE =====
                 const mensajeClienteConfirmacion = `*JL PHONE BUYBACK* 🤝\n\n` +
                     `¡Hola ${solicitudData.nombre}! ✅\n\n` +
                     `Hemos recibido tu solicitud de venta #${solicitudId}\n\n` +
@@ -184,8 +224,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const telefonoClienteLimpio = solicitudData.telefono.replace(/\D/g, '');
                 const whatsappClienteUrl = `https://wa.me/52${telefonoClienteLimpio}?text=${encodeURIComponent(mensajeClienteConfirmacion)}`;
                 
-                // Abrir WhatsApp del cliente (se abrirá en nueva pestaña)
-                window.open(whatsappClienteUrl, '_blank');
+                // Abrir WhatsApp del cliente
+                abrirWhatsApp(whatsappClienteUrl);
                 
                 // Enviar WhatsApp al administrador
                 const mensajeAdmin = `🆕 *NUEVA SOLICITUD DE VENTA* #${solicitudId}\n\n` +
@@ -201,8 +241,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const adminWhatsApp = '523111063251';
                 const whatsappAdminUrl = `https://wa.me/${adminWhatsApp}?text=${encodeURIComponent(mensajeAdmin)}`;
                 
-                // Abrir WhatsApp del admin en nueva pestaña
-                window.open(whatsappAdminUrl, '_blank');
+                // Abrir WhatsApp del admin
+                abrirWhatsApp(whatsappAdminUrl);
                 
                 // Mensaje de éxito
                 await Swal.fire({
