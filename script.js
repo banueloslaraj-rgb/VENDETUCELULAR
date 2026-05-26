@@ -166,8 +166,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 if (error) throw error;
                 
-                // Enviar WhatsApp al administrador
                 const solicitudId = data[0].id;
+                
+                // ===== NUEVO: Enviar WhatsApp de confirmación AL CLIENTE =====
+                const mensajeClienteConfirmacion = `*JL PHONE BUYBACK* 🤝\n\n` +
+                    `¡Hola ${solicitudData.nombre}! ✅\n\n` +
+                    `Hemos recibido tu solicitud de venta #${solicitudId}\n\n` +
+                    `📱 *Equipo:* ${solicitudData.marca} ${solicitudData.modelo}\n` +
+                    `💰 *Precio sugerido:* $${parseInt(precioCliente).toLocaleString()} MXN\n\n` +
+                    `⌛ En las próximas horas estaremos evaluando tu equipo y te enviaremos nuestra respuesta.\n\n` +
+                    `📌 *Mientras tanto, puedes:*\n` +
+                    `• Responder este mensaje si tienes dudas\n` +
+                    `• Tener listo tu equipo para la revisión\n\n` +
+                    `¡Gracias por confiar en nosotros! 🙌\n\n` +
+                    `*JL PHONE BUYBACK* - Compra profesional de equipos usados`;
+                
+                const telefonoClienteLimpio = solicitudData.telefono.replace(/\D/g, '');
+                const whatsappClienteUrl = `https://wa.me/52${telefonoClienteLimpio}?text=${encodeURIComponent(mensajeClienteConfirmacion)}`;
+                
+                // Abrir WhatsApp del cliente (se abrirá en nueva pestaña)
+                window.open(whatsappClienteUrl, '_blank');
+                
+                // Enviar WhatsApp al administrador
                 const mensajeAdmin = `🆕 *NUEVA SOLICITUD DE VENTA* #${solicitudId}\n\n` +
                     `👤 *Cliente:* ${solicitudData.nombre}\n` +
                     `📱 *Teléfono:* ${solicitudData.telefono}\n` +
@@ -184,23 +204,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Abrir WhatsApp del admin en nueva pestaña
                 window.open(whatsappAdminUrl, '_blank');
                 
-                // Mensaje de éxito con opción de WhatsApp
+                // Mensaje de éxito
                 await Swal.fire({
                     title: '¡Solicitud enviada!',
                     html: `Hemos recibido tu solicitud. <strong>Te contactaremos en breve</strong> por WhatsApp.<br><br>
                     <strong>Tu precio sugerido:</strong> <span style="color:#10b981; font-size:1.2rem;">$${parseInt(precioCliente).toLocaleString()} MXN</span><br><br>
-                    ¿Quieres contactarnos directamente?`,
+                    ✅ Se abrirá WhatsApp para confirmar tu solicitud.`,
                     icon: 'success',
-                    confirmButtonText: '📱 Enviar WhatsApp ahora',
-                    cancelButtonText: 'Cerrar',
-                    showCancelButton: true,
+                    confirmButtonText: 'Entendido',
                     confirmButtonColor: '#10b981'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        const mensajeCliente = `Hola, soy ${solicitudData.nombre}. Acabo de enviar mi solicitud #${solicitudId} para vender mi ${solicitudData.marca} ${solicitudData.modelo} por $${parseInt(precioCliente).toLocaleString()} MXN.`;
-                        const clienteWhatsApp = `https://wa.me/523111063251?text=${encodeURIComponent(mensajeCliente)}`;
-                        window.open(clienteWhatsApp, '_blank');
-                    } 
                 });
                 
                 form.reset();
