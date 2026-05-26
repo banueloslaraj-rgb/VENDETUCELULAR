@@ -31,6 +31,7 @@ body {
     background: var(--darker);
     padding: 20px;
     font-family: 'Poppins', sans-serif;
+    color: white;
 }
 
 .login-container {
@@ -42,6 +43,7 @@ body {
     border-radius: 20px;
     text-align: center;
     border: 1px solid rgba(99, 102, 241, 0.2);
+    color: white;
 }
 
 .login-container h2 {
@@ -56,7 +58,7 @@ body {
     background: rgba(15, 23, 42, 0.8);
     border: 1px solid rgba(99, 102, 241, 0.3);
     border-radius: 12px;
-    color: var(--light);
+    color: white;
     font-family: 'Poppins', sans-serif;
 }
 
@@ -77,6 +79,7 @@ body {
     display: none;
     max-width: 1400px;
     margin: 0 auto;
+    color: white;
 }
 
 .admin-header {
@@ -106,7 +109,7 @@ body {
     padding: 10px 20px;
     background: rgba(30, 41, 59, 0.5);
     border: 1px solid rgba(99, 102, 241, 0.3);
-    color: var(--light);
+    color: white;
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.3s;
@@ -135,11 +138,20 @@ body {
     padding: 25px;
     border: 1px solid rgba(99, 102, 241, 0.2);
     transition: all 0.3s;
+    color: white;
 }
 
 .solicitud-card:hover {
     transform: translateY(-3px);
     border-color: var(--primary);
+}
+
+.solicitud-card p {
+    color: white;
+}
+
+.solicitud-card strong {
+    color: white;
 }
 
 .precio-cliente {
@@ -148,6 +160,7 @@ body {
     border-radius: 12px;
     display: inline-block;
     font-weight: bold;
+    color: white;
 }
 
 .fotos-grid {
@@ -202,8 +215,13 @@ body {
     background: rgba(15, 23, 42, 0.8);
     border: 1px solid rgba(99, 102, 241, 0.3);
     border-radius: 12px;
-    color: var(--light);
+    color: white;
     font-family: 'Poppins', sans-serif;
+}
+
+.input-group input::placeholder,
+.input-group textarea::placeholder {
+    color: #94a3b8;
 }
 
 .modal {
@@ -224,13 +242,17 @@ body {
     max-height: 90%;
     border-radius: 20px;
 }
+
+#contadorPendientes {
+    color: white;
+}
 </style>
 </head>
 <body>
 
 <div id="loginPanel" class="login-container">
     <h2>🔐 Panel Administrativo</h2>
-    <p style="color:var(--gray); margin-bottom:20px;">Ingresa la contraseña de acceso</p>
+    <p style="color:#94a3b8; margin-bottom:20px;">Ingresa la contraseña de acceso</p>
     <input type="password" id="adminPassword" placeholder="Contraseña">
     <button id="loginBtn">Acceder al panel</button>
 </div>
@@ -269,7 +291,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let solicitudes = [];
     let filtroActual = 'todas';
     
-    // Elementos
     const loginPanel = document.getElementById('loginPanel');
     const adminPanel = document.getElementById('adminPanel');
     const loginBtn = document.getElementById('loginBtn');
@@ -339,7 +360,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         if (filtradas.length === 0) {
-            solicitudesContainer.innerHTML = '<div style="text-align:center; color:var(--gray);">No hay solicitudes</div>';
+            solicitudesContainer.innerHTML = '<div style="text-align:center; color:#94a3b8;">No hay solicitudes</div>';
             return;
         }
         
