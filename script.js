@@ -200,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         const mensajeCliente = `Hola, soy ${solicitudData.nombre}. Acabo de enviar mi solicitud #${solicitudId} para vender mi ${solicitudData.marca} ${solicitudData.modelo} por $${parseInt(precioCliente).toLocaleString()} MXN.`;
                         const clienteWhatsApp = `https://wa.me/523111063251?text=${encodeURIComponent(mensajeCliente)}`;
                         window.open(clienteWhatsApp, '_blank');
-                    }
+                    } 
                 });
                 
                 form.reset();
