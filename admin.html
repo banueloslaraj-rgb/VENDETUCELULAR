@@ -408,6 +408,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('modal').style.display = 'none';
     };
     
+    // ===== FUNCIÓN CORREGIDA PARA ABRIR WHATSAPP =====
     window.responderSolicitud = async function(id) {
         const precio = document.getElementById(`precio-${id}`).value;
         const mensaje = document.getElementById(`mensaje-${id}`).value;
@@ -436,9 +437,33 @@ document.addEventListener('DOMContentLoaded', function() {
         const mensajeWhatsApp = `*JL PHONE BUYBACK*\n\nHola ${solicitud.nombre},\n\nRespuesta a tu solicitud #${solicitud.id}\n\n📱 ${solicitud.marca} ${solicitud.modelo}\n💰 Tu precio: $${precioCliente.toLocaleString()} MXN\n\n🎯 *Nuestra respuesta:* ${ofertaTexto}\n\n📝 *Mensaje:* ${mensaje}\n\n¡Esperamos tu respuesta! 🙌`;
         
         const telefonoLimpio = solicitud.telefono.replace(/\D/g, '');
-        window.open(`https://wa.me/52${telefonoLimpio}?text=${encodeURIComponent(mensajeWhatsApp)}`, '_blank');
+        const whatsappUrl = `https://wa.me/52${telefonoLimpio}?text=${encodeURIComponent(mensajeWhatsApp)}`;
         
-        Swal.fire('Éxito', 'Respuesta enviada', 'success');
+        // MÉTODO 1: Intentar abrir en nueva pestaña (funciona en la mayoría de navegadores)
+        const ventana = window.open(whatsappUrl, '_blank');
+        
+        // MÉTODO 2: Si falla, mostrar un enlace para que el usuario haga clic manualmente
+        if (!ventana || ventana.closed || typeof ventana.closed === 'undefined') {
+            // Mostrar un SweetAlert con el enlace directo
+            Swal.fire({
+                title: '📱 Abrir WhatsApp',
+                html: `Haz clic en el siguiente enlace para enviar el mensaje:<br><br>
+                       <a href="${whatsappUrl}" target="_blank" style="color: #10b981; word-break: break-all;">Abrir WhatsApp</a><br><br>
+                       <small>Si no se abre automáticamente, haz clic en el enlace</small>`,
+                icon: 'info',
+                confirmButtonText: 'Cerrar',
+                confirmButtonColor: '#10b981'
+            });
+        } else {
+            // Si se abrió correctamente, mostrar mensaje de éxito
+            Swal.fire({
+                title: '✅ Respuesta enviada',
+                text: `Se abrió WhatsApp para contactar a ${solicitud.nombre}`,
+                icon: 'success',
+                confirmButtonColor: '#10b981'
+            });
+        }
+        
         cargarSolicitudes();
     };
     
