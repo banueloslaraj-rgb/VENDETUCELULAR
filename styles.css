@@ -1,5 +1,201 @@
-/* Agrega estos estilos a tu styles.css existente */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #0a0a0a;
+    color: white;
+    line-height: 1.6;
+}
+
+.hero {
+    position: relative;
+    height: 100vh;
+    background: linear-gradient(rgba(0,0,0,.75), rgba(0,0,0,.85)),
+    url('https://images.unsplash.com/photo-1591337676887-a217a6970a8a?auto=format&fit=crop&w=1400&q=80');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+}
+
+.hero h1 {
+    font-size: 3rem;
+    color: #00ff88;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-shadow: 0 0 15px #00ff88;
+}
+
+.hero h2 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    color: #ddd;
+    margin-bottom: 25px;
+}
+
+.phone-number {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 25px;
+    color: #00ff88;
+}
+
+.btn {
+    display: inline-block;
+    padding: 15px 35px;
+    background: #00ff88;
+    color: #000;
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 50px;
+    transition: .3s;
+    box-shadow: 0 0 15px #00ff88;
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+    background: #00cc6a;
+}
+
+section {
+    padding: 70px 20px;
+    text-align: center;
+}
+
+section h2 {
+    font-size: 2rem;
+    margin-bottom: 35px;
+    color: #00ff88;
+}
+
+.cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
+}
+
+.card {
+    background: #111;
+    padding: 25px;
+    border-radius: 18px;
+    width: 260px;
+    border: 1px solid #1f1f1f;
+    transition: .3s;
+    box-shadow: 0 0 10px rgba(0,255,136,.08);
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 0 20px rgba(0,255,136,.35);
+}
+
+.card h3 {
+    margin-bottom: 10px;
+    color: #00ff88;
+}
+
+.steps {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 25px;
+}
+
+.step {
+    background: #111;
+    padding: 30px;
+    width: 220px;
+    border-radius: 20px;
+}
+
+.step h3 {
+    font-size: 2rem;
+    color: #00ff88;
+    margin-bottom: 10px;
+}
+
+.notice {
+    background: #111;
+}
+
+.notice p {
+    max-width: 750px;
+    margin: auto;
+    font-size: 1.1rem;
+    color: #ddd;
+}
+
+footer {
+    background: #050505;
+    padding: 30px;
+    text-align: center;
+    border-top: 1px solid #1c1c1c;
+}
+
+footer h3 {
+    color: #00ff88;
+    margin-bottom: 10px;
+}
+
+.whatsapp-float {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 65px;
+    height: 65px;
+    background: #25d366;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    text-decoration: none;
+    box-shadow: 0 0 20px rgba(37,211,102,.5);
+    z-index: 999;
+    transition: .3s;
+}
+
+.whatsapp-float:hover {
+    transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 2.2rem;
+    }
+    .hero h2 {
+        font-size: 1.5rem;
+    }
+    .phone-number {
+        font-size: 1.5rem;
+    }
+    .cards,
+    .steps {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+/* ===== ESTILOS DEL FORMULARIO ===== */
 .solicitud {
     background: linear-gradient(135deg, #0a0a0a 0%, #0d0d0d 100%);
 }
@@ -11,6 +207,7 @@
     border-radius: 20px;
     padding: 40px;
     border: 1px solid #1f1f1f;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
 }
 
 .form-group {
@@ -35,6 +232,7 @@
     border-radius: 10px;
     color: white;
     font-family: 'Poppins', sans-serif;
+    transition: all 0.3s;
 }
 
 .form-group input:focus,
@@ -42,6 +240,19 @@
 .form-group textarea:focus {
     outline: none;
     border-color: #00ff88;
+    box-shadow: 0 0 10px rgba(0,255,136,0.2);
+}
+
+.form-group input[type="file"] {
+    padding: 10px;
+    background: #1a1a1a;
+}
+
+.form-group small {
+    display: block;
+    margin-top: 5px;
+    color: #888;
+    font-size: 0.8rem;
 }
 
 .preview-fotos {
@@ -58,6 +269,7 @@
     border-radius: 10px;
     overflow: hidden;
     background: #1a1a1a;
+    border: 1px solid #2a2a2a;
 }
 
 .preview-foto img {
@@ -93,6 +305,7 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s;
+    margin-top: 10px;
 }
 
 .btn-submit:hover {
@@ -100,10 +313,45 @@
     box-shadow: 0 0 20px rgba(0,255,136,0.4);
 }
 
+.form-mensaje {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 10px;
+    display: none;
+}
+
+.form-mensaje.success {
+    background: rgba(0,255,136,0.1);
+    border: 1px solid #00ff88;
+    color: #00ff88;
+    display: block;
+}
+
+.form-mensaje.error {
+    background: rgba(255,68,68,0.1);
+    border: 1px solid #ff4444;
+    color: #ff4444;
+    display: block;
+}
+
+/* Estilos para el admin */
 .solicitudes-grid {
     display: flex;
     flex-direction: column;
     gap: 20px;
+}
+
+.solicitud-card {
+    background: #111;
+    border-radius: 15px;
+    padding: 20px;
+    border: 1px solid #2a2a2a;
+    transition: all 0.3s;
+}
+
+.solicitud-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
 
 .filtro-btn.active {

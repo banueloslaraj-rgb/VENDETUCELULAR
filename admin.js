@@ -4,13 +4,13 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// ===== CONTRASEÑA DEL ADMIN (CAMBIA ESTO POR LA QUE QUIERAS) =====
-const ADMIN_PASSWORD = 'admin123';  // 👈 CAMBIA ESTA CONTRASEÑA
+// ===== CONTRASEÑA DEL ADMIN (CAMBIA AQUÍ LA CONTRASEÑA QUE QUIERAS) =====
+const ADMIN_PASSWORD = 'admin123';
 
 let solicitudes = [];
 let filtroActual = 'todas';
 
-// Login con contraseña fija
+// Función de login
 function loginAdmin() {
     const password = document.getElementById('adminPassword').value;
     
@@ -20,9 +20,7 @@ function loginAdmin() {
     }
     
     if (password === ADMIN_PASSWORD) {
-        // Guardar en sessionStorage para mantener la sesión
         sessionStorage.setItem('adminLoggedIn', 'true');
-        
         Swal.fire('Éxito', 'Bienvenido al panel de administración', 'success');
         document.getElementById('loginPanel').style.display = 'none';
         document.getElementById('adminPanel').style.display = 'block';
@@ -33,7 +31,7 @@ function loginAdmin() {
     }
 }
 
-// Logout
+// Función de logout
 function logoutAdmin() {
     sessionStorage.removeItem('adminLoggedIn');
     document.getElementById('loginPanel').style.display = 'block';
@@ -41,7 +39,7 @@ function logoutAdmin() {
     document.getElementById('adminPassword').value = '';
 }
 
-// Verificar si ya hay sesión
+// Verificar sesión
 function checkSession() {
     const isLoggedIn = sessionStorage.getItem('adminLoggedIn');
     if (isLoggedIn === 'true') {
@@ -85,10 +83,12 @@ async function cargarSolicitudes() {
 function actualizarContador() {
     const pendientes = solicitudes.filter(s => s.estado === 'pendiente').length;
     const contadorDiv = document.getElementById('contadorPendientes');
-    contadorDiv.innerHTML = `
-        <strong style="color: #00ff88;">📊 Resumen:</strong> 
-        ${pendientes} solicitud(es) pendiente(s) de respuesta
-    `;
+    if (contadorDiv) {
+        contadorDiv.innerHTML = `
+            <strong style="color: #00ff88;">📊 Resumen:</strong> 
+            ${pendientes} solicitud(es) pendiente(s) de respuesta
+        `;
+    }
 }
 
 // Mostrar solicitudes
@@ -106,7 +106,7 @@ function mostrarSolicitudes() {
     }
     
     container.innerHTML = solicitudesFiltradas.map(solicitud => `
-        <div class="solicitud-card" style="background:#111; border-radius:15px; padding:20px; border:1px solid #2a2a2a; margin-bottom:20px;">
+        <div style="background:#111; border-radius:15px; padding:20px; border:1px solid #2a2a2a; margin-bottom:20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding-bottom:10px; border-bottom:1px solid #2a2a2a;">
                 <span style="color:#00ff88; font-weight:bold;">#${solicitud.id}</span>
                 <span style="padding:4px 12px; border-radius:20px; font-size:0.8rem; background:${solicitud.estado === 'pendiente' ? '#ff6600' : '#00ff88'}; color:${solicitud.estado === 'pendiente' ? 'white' : 'black'}">
@@ -173,7 +173,6 @@ async function responderSolicitud(id) {
     
     if (!confirmacion.isConfirmed) return;
     
-    // Actualizar en Supabase
     const { error } = await supabase
         .from('solicitudes')
         .update({
@@ -189,13 +188,11 @@ async function responderSolicitud(id) {
         return;
     }
     
-    // Enviar WhatsApp al cliente
     const mensajeWhatsApp = `*JL PHONE BUYBACK* - Respuesta a tu solicitud #${solicitud.id}\n\nHola ${solicitud.nombre},\n\nHemos evaluado tu equipo *${solicitud.marca} ${solicitud.modelo}*.\n\n💰 *Precio ofertado:* ${precio}\n\n📝 *Comentario:* ${mensaje}\n\n¡Esperamos tu respuesta! Contáctanos al 3111063251.\n\nGracias por confiar en JL PHONE BUYBACK. 🙌`;
     
     const telefonoLimpio = solicitud.telefono.replace(/\D/g, '');
     const urlWhatsApp = `https://wa.me/52${telefonoLimpio}?text=${encodeURIComponent(mensajeWhatsApp)}`;
     
-    // Abrir WhatsApp en nueva ventana
     window.open(urlWhatsApp, '_blank');
     
     Swal.fire({
@@ -205,10 +202,10 @@ async function responderSolicitud(id) {
         confirmButtonColor: '#00ff88'
     });
     
-    cargarSolicitudes(); // Recargar
+    cargarSolicitudes();
 }
 
-// Abrir modal de fotos
+// Abrir modal
 function abrirModal(imgSrc) {
     const modal = document.getElementById('modal');
     const modalImg = document.getElementById('modalImg');
@@ -221,14 +218,14 @@ function cerrarModal() {
 }
 
 // Event listeners para filtros
-document.querySelectorAll('.filtro-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        filtroActual = btn.dataset.filtro;
+document.addEventListener('click', function(e) {
+    if (e.target.classList && e.target.classList.contains('filtro-btn')) {
+        document.querySelectorAll('.filtro-btn').forEach(btn => btn.classList.remove('active'));
+        e.target.classList.add('active');
+        filtroActual = e.target.getAttribute('data-filtro');
         mostrarSolicitudes();
-    });
+    }
 });
 
-// Iniciar - verificar sesión
+// Iniciar
 checkSession();

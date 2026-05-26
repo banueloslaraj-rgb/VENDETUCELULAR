@@ -1,4 +1,4 @@
-// ===== CONFIGURACIÓN DE SUPABASE (YA CON TUS CREDENCIALES) =====
+// ===== CONFIGURACIÓN DE SUPABASE =====
 const SUPABASE_URL = 'https://yczegabspeywaaxsnnoj.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InljemVnYWJzcGV5d2FheHNubm9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4MDc3OTksImV4cCI6MjA5NTM4Mzc5OX0.tdVSoJTjqdwX8wyqnbdNH6mXESDPPIdC_c6bg3kKm5g';
 
@@ -98,7 +98,6 @@ if (form) {
                 throw error;
             }
             
-            // Obtener URL pública
             const { data: { publicUrl } } = supabase.storage
                 .from('fotos-solicitudes')
                 .getPublicUrl(filePath);
@@ -118,15 +117,12 @@ if (form) {
         submitBtn.textContent = 'Enviando...';
         
         try {
-            // Validar que haya al menos una foto
             if (archivosSeleccionados.length === 0) {
                 throw new Error('Debes subir al menos una foto del equipo');
             }
             
-            // 1. Subir fotos
             let fotosUrls = await subirFotos(archivosSeleccionados);
             
-            // 2. Guardar solicitud en Supabase
             const solicitudData = {
                 nombre: document.getElementById('nombre').value,
                 email: document.getElementById('email').value,
@@ -146,7 +142,6 @@ if (form) {
             
             if (error) throw error;
             
-            // 3. Mostrar éxito
             Swal.fire({
                 title: '¡Solicitud enviada!',
                 text: 'Hemos recibido tu solicitud. Te contactaremos en menos de 24 horas.',
@@ -160,7 +155,7 @@ if (form) {
             
         } catch (error) {
             console.error('Error:', error);
-            Swal.fire('Error', error.message || 'Hubo un problema al enviar tu solicitud. Intenta nuevamente.', 'error');
+            Swal.fire('Error', error.message || 'Hubo un problema al enviar tu solicitud.', 'error');
         } finally {
             submitBtn.disabled = false;
             submitBtn.textContent = 'Enviar solicitud';
