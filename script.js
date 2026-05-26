@@ -5,10 +5,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const SUPABASE_URL = 'https://yczegabspeywaaxsnnoj.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InljemVnYWJzcGV5d2FheHNubm9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4MDc3OTksImV4cCI6MjA5NTM4Mzc5OX0.tdVSoJTjqdwX8wyqnbdNH6mXESDPPIdC_c6bg3kKm5g';
     
-    // Crear cliente de Supabase
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
-    // Animaciones existentes
+    // Animaciones
     const cards = document.querySelectorAll('.card');
     const steps = document.querySelectorAll('.step');
     
@@ -32,7 +31,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Configurar estilos iniciales
     cards.forEach(item => {
         item.style.opacity = "0";
         item.style.transform = "translateY(40px)";
@@ -46,10 +44,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     window.addEventListener('scroll', aplicarAnimaciones);
-    aplicarAnimaciones(); // Aplicar al cargar
+    aplicarAnimaciones();
     
     // ===== FUNCIONALIDAD DEL FORMULARIO =====
     const form = document.getElementById('ventaForm');
+    
     if (form) {
         const fotosInput = document.getElementById('fotos');
         const previewContainer = document.getElementById('previewFotos');
@@ -82,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Eliminar foto de vista previa
+        // Eliminar foto
         previewContainer.addEventListener('click', (e) => {
             if (e.target.classList.contains('remove-foto')) {
                 const index = parseInt(e.target.getAttribute('data-index'));
@@ -94,27 +93,23 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Subir fotos a Supabase Storage
+        // Subir fotos
         async function subirFotos(archivos) {
             const urls = [];
             
             for (const archivo of archivos) {
                 const extension = archivo.name.split('.').pop();
                 const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${extension}`;
-                const filePath = `${fileName}`;
                 
                 const { data, error } = await supabase.storage
                     .from('fotos-solicitudes')
-                    .upload(filePath, archivo);
+                    .upload(fileName, archivo);
                 
-                if (error) {
-                    console.error('Error al subir foto:', error);
-                    throw error;
-                }
+                if (error) throw error;
                 
                 const { data: { publicUrl } } = supabase.storage
                     .from('fotos-solicitudes')
-                    .getPublicUrl(filePath);
+                    .getPublicUrl(fileName);
                 
                 urls.push(publicUrl);
             }
@@ -132,23 +127,25 @@ document.addEventListener('DOMContentLoaded', function() {
             
             try {
                 if (archivosSeleccionados.length === 0) {
-                    throw new Error('Debes subir al menos una foto del equipo');
+                    throw new Error('Debes subir al menos una foto');
                 }
                 
-                // Mostrar loading
+                const precioCliente = document.getElementById('precioCliente').value;
+                if (!precioCliente) {
+                    throw new Error('Ingresa el precio que esperas por tu equipo');
+                }
+                
                 Swal.fire({
                     title: 'Enviando solicitud...',
                     text: 'Por favor espera',
                     allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
+                    didOpen: () => Swal.showLoading()
                 });
                 
-                // 1. Subir fotos
+                // Subir fotos
                 let fotosUrls = await subirFotos(archivosSeleccionados);
                 
-                // 2. Guardar solicitud
+                // Guardar solicitud
                 const solicitudData = {
                     nombre: document.getElementById('nombre').value,
                     email: document.getElementById('email').value,
@@ -156,7 +153,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     marca: document.getElementById('marca').value,
                     modelo: document.getElementById('modelo').value,
                     condicion: document.getElementById('condicion').value,
-                    descripcion: document.getElementById('descripcion').value,
+                    precio_cliente: precioCliente,
+                    descripcion: document.getElementById('descripcion').value || '',
                     fotos: fotosUrls,
                     estado: 'pendiente'
                 };
@@ -168,11 +166,41 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 if (error) throw error;
                 
-                Swal.fire({
+                // Enviar WhatsApp al administrador
+                const solicitudId = data[0].id;
+                const mensajeAdmin = `🆕 *NUEVA SOLICITUD DE VENTA* #${solicitudId}\n\n` +
+                    `👤 *Cliente:* ${solicitudData.nombre}\n` +
+                    `📱 *Teléfono:* ${solicitudData.telefono}\n` +
+                    `📧 *Email:* ${solicitudData.email}\n` +
+                    `🏷️ *Equipo:* ${solicitudData.marca} ${solicitudData.modelo}\n` +
+                    `🔧 *Condición:* ${solicitudData.condicion}\n` +
+                    `💰 *Precio esperado:* $${parseInt(precioCliente).toLocaleString()} MXN\n` +
+                    `📝 *Descripción:* ${solicitudData.descripcion || 'Sin descripción'}\n\n` +
+                    `🔗 *Ver en admin:* ${window.location.origin}/admin.html`;
+                
+                const adminWhatsApp = '521311063251';
+                const whatsappAdminUrl = `https://wa.me/${adminWhatsApp}?text=${encodeURIComponent(mensajeAdmin)}`;
+                
+                // Abrir WhatsApp del admin en nueva pestaña
+                window.open(whatsappAdminUrl, '_blank');
+                
+                // Mensaje de éxito con opción de WhatsApp
+                await Swal.fire({
                     title: '¡Solicitud enviada!',
-                    text: 'Hemos recibido tu solicitud. Te contactaremos en menos de 24 horas.',
+                    html: `Hemos recibido tu solicitud. <strong>Te contactaremos en breve</strong> por WhatsApp.<br><br>
+                    <strong>Tu precio sugerido:</strong> <span style="color:#10b981; font-size:1.2rem;">$${parseInt(precioCliente).toLocaleString()} MXN</span><br><br>
+                    ¿Quieres contactarnos directamente?`,
                     icon: 'success',
-                    confirmButtonColor: '#00ff88'
+                    confirmButtonText: '📱 Enviar WhatsApp ahora',
+                    cancelButtonText: 'Cerrar',
+                    showCancelButton: true,
+                    confirmButtonColor: '#10b981'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const mensajeCliente = `Hola, soy ${solicitudData.nombre}. Acabo de enviar mi solicitud #${solicitudId} para vender mi ${solicitudData.marca} ${solicitudData.modelo} por $${parseInt(precioCliente).toLocaleString()} MXN.`;
+                        const clienteWhatsApp = `https://wa.me/521311063251?text=${encodeURIComponent(mensajeCliente)}`;
+                        window.open(clienteWhatsApp, '_blank');
+                    }
                 });
                 
                 form.reset();
@@ -181,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
             } catch (error) {
                 console.error('Error:', error);
-                Swal.fire('Error', error.message || 'Hubo un problema al enviar tu solicitud.', 'error');
+                Swal.fire('Error', error.message, 'error');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Enviar solicitud';

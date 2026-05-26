@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JL PHONE BUYBACK | Compramos iPhone Usados y Semi Nuevos</title>
-<meta name="description" content="Compramos iPhone usados y semi nuevos con o sin detalle. Compra segura y cotización rápida por WhatsApp.">
+<title>JL PHONE BUYBACK | Vende tu iPhone o Android</title>
+<meta name="description" content="Vende tu iPhone o Android usado. Cotiza tu equipo, pon tu precio y recibe una oferta justa.">
 <link rel="stylesheet" href="styles.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -18,40 +17,43 @@
 <div class="overlay"></div>
 <div class="hero-content">
 <h1>JL PHONE BUYBACK</h1>
-<h2>Compramos iPhone Usados y Semi Nuevos</h2>
-<p>Con o sin detalle</p>
+<h2>Vende tu iPhone o Android</h2>
+<p>Pon tu precio y recibe una oferta justa</p>
 <div class="phone-number">
 📲 3111063251
 </div>
-<a href="https://wa.me/523111063251" class="btn">
+<a href="https://wa.me/523111063251" class="btn btn-primary">
 Cotizar por WhatsApp
 </a>
 </div>
 </header>
 
-<!-- FORMULARIO DE SOLICITUD -->
+<!-- FORMULARIO DE SOLICITUD MEJORADO -->
 <section class="solicitud">
-<h2>Solicitar Venta de mi Equipo</h2>
-<p>Completa el formulario y te daremos una valoración en menos de 24 horas</p>
+<h2>Vende tu equipo</h2>
+<p>Completa el formulario y recibe una oferta en minutos</p>
 <div class="form-container">
 <form id="ventaForm" enctype="multipart/form-data">
+<div class="form-row">
 <div class="form-group">
-<label for="nombre">Nombre completo *</label>
+<label for="nombre">👤 Nombre completo *</label>
 <input type="text" id="nombre" name="nombre" required>
 </div>
 
 <div class="form-group">
-<label for="email">Correo electrónico *</label>
+<label for="email">📧 Correo electrónico *</label>
 <input type="email" id="email" name="email" required>
 </div>
+</div>
 
+<div class="form-row">
 <div class="form-group">
-<label for="telefono">Teléfono / WhatsApp *</label>
+<label for="telefono">📱 WhatsApp *</label>
 <input type="tel" id="telefono" name="telefono" placeholder="Ej: 3111063251" required>
 </div>
 
 <div class="form-group">
-<label for="marca">Marca del equipo *</label>
+<label for="marca">🏷️ Marca *</label>
 <select id="marca" name="marca" required>
 <option value="">Selecciona</option>
 <option value="iPhone">iPhone</option>
@@ -63,14 +65,16 @@ Cotizar por WhatsApp
 <option value="Otro">Otro</option>
 </select>
 </div>
+</div>
 
+<div class="form-row">
 <div class="form-group">
-<label for="modelo">Modelo exacto *</label>
+<label for="modelo">📟 Modelo exacto *</label>
 <input type="text" id="modelo" name="modelo" placeholder="Ej: iPhone 13 Pro, Samsung S23" required>
 </div>
 
 <div class="form-group">
-<label for="condicion">Condición del equipo *</label>
+<label for="condicion">🔧 Condición *</label>
 <select id="condicion" name="condicion" required>
 <option value="">Selecciona</option>
 <option value="Semi nuevo (sin detalles)">Semi nuevo (sin detalles)</option>
@@ -81,21 +85,28 @@ Cotizar por WhatsApp
 <option value="No enciende / falla grave">No enciende / falla grave</option>
 </select>
 </div>
-
-<div class="form-group">
-<label for="descripcion">Descripción adicional</label>
-<textarea id="descripcion" name="descripcion" rows="3" placeholder="Describe cualquier detalle adicional..."></textarea>
 </div>
 
 <div class="form-group">
-<label for="fotos">Fotos del equipo (máx 5 fotos) *</label>
+<label for="precioCliente">💰 ¿Cuánto esperas por tu equipo? *</label>
+<input type="number" id="precioCliente" name="precioCliente" placeholder="Ej: 5000" required>
+<small>Ingresa el precio que esperas recibir por tu equipo</small>
+</div>
+
+<div class="form-group">
+<label for="descripcion">📝 Descripción adicional</label>
+<textarea id="descripcion" name="descripcion" rows="3" placeholder="Describe cualquier detalle adicional (golpes, fallas, accesorios incluidos)..."></textarea>
+</div>
+
+<div class="form-group">
+<label for="fotos">📸 Fotos del equipo (máx 5 fotos) *</label>
 <input type="file" id="fotos" name="fotos" accept="image/*" multiple required>
-<small>Puedes seleccionar hasta 5 fotos (frontal, trasera, laterales, encendido)</small>
+<small>Sube fotos frontal, trasera, laterales y encendido</small>
 </div>
 
 <div id="previewFotos" class="preview-fotos"></div>
 
-<button type="submit" class="btn-submit">Enviar solicitud</button>
+<button type="submit" class="btn-submit">📤 Enviar solicitud de venta</button>
 <div id="formMensaje" class="form-mensaje"></div>
 </form>
 </div>
@@ -105,16 +116,19 @@ Cotizar por WhatsApp
 <h2>¿Por qué vender con nosotros?</h2>
 <div class="cards">
 <div class="card">
+<div class="card-icon">💰</div>
+<h3>Pago Rápido</h3>
+<p>Evaluación en minutos y pago al momento</p>
+</div>
+<div class="card">
+<div class="card-icon">🛡️</div>
 <h3>Compra Segura</h3>
-<p>Proceso confiable y atención directa.</p>
+<p>Proceso confiable y atención personalizada</p>
 </div>
 <div class="card">
-<h3>Pago al Momento</h3>
-<p>Evaluación rápida y oferta inmediata.</p>
-</div>
-<div class="card">
-<h3>Local Establecido</h3>
-<p>Atención seria y profesional.</p>
+<div class="card-icon">⭐</div>
+<h3>Mejor Precio</h3>
+<p>Te ofrecemos el valor justo por tu equipo</p>
 </div>
 </div>
 </section>
@@ -123,45 +137,41 @@ Cotizar por WhatsApp
 <h2>¿Cómo funciona?</h2>
 <div class="steps">
 <div class="step">
-<h3>1</h3>
-<p>Envías tu solicitud con fotos</p>
+<div class="step-number">1</div>
+<p>Envías tu solicitud<br>con fotos y tu precio</p>
 </div>
 <div class="step">
-<h3>2</h3>
-<p>Evaluamos tu equipo</p>
+<div class="step-number">2</div>
+<p>Evaluamos tu equipo<br>y tu propuesta</p>
 </div>
 <div class="step">
-<h3>3</h3>
-<p>Recibes oferta por WhatsApp/Email</p>
+<div class="step-number">3</div>
+<p>Aceptamos tu precio<br>o te damos nuestra oferta</p>
 </div>
-</div>
-</section>
-
-<section class="devices">
-<h2>¿Qué iPhone compramos?</h2>
-<div class="cards">
-<div class="card">Pantalla dañada</div>
-<div class="card">Batería baja</div>
-<div class="card">Semi nuevos</div>
-<div class="card">Con golpes o detalle</div>
-<div class="card">Modelos recientes y anteriores</div>
 </div>
 </section>
 
 <section class="notice">
-<h2>Importante</h2>
-<p>Pagamos precio de compra para reventa. No pagamos precio de nuevo ni precio de venta entre particulares.</p>
+<h2>💡 ¿Cómo funciona el precio?</h2>
+<p>Tú pones el precio que esperas por tu equipo. Nosotros evaluamos tu solicitud y podemos:</p>
+<ul>
+<li>✅ <strong>Aceptar tu precio</strong> - Si es justo según el mercado</li>
+<li>📝 <strong>Hacerte una contraoferta</strong> - Te daremos nuestro mejor precio</li>
+<li>📞 <strong>Contactarte para negociar</strong> - Llegaremos a un acuerdo justo</li>
+</ul>
 </section>
 
 <footer>
 <h3>JL PHONE BUYBACK</h3>
 <p>WhatsApp: 3111063251</p>
+<p style="margin-top: 10px; font-size: 0.8rem;">© 2024 - Compra profesional de equipos usados</p>
 </footer>
 
 <a href="https://wa.me/523111063251" class="whatsapp-float">
 💬
 </a>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 </body>
 </html>
