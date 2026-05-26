@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     `📝 *Descripción:* ${solicitudData.descripcion || 'Sin descripción'}\n\n` +
                     `🔗 *Ver en admin:* ${window.location.origin}/admin.html`;
                 
-                const adminWhatsApp = '52311063251';
+                const adminWhatsApp = '523111063251';
                 const whatsappAdminUrl = `https://wa.me/${adminWhatsApp}?text=${encodeURIComponent(mensajeAdmin)}`;
                 
                 // Abrir WhatsApp del admin en nueva pestaña
@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }).then((result) => {
                     if (result.isConfirmed) {
                         const mensajeCliente = `Hola, soy ${solicitudData.nombre}. Acabo de enviar mi solicitud #${solicitudId} para vender mi ${solicitudData.marca} ${solicitudData.modelo} por $${parseInt(precioCliente).toLocaleString()} MXN.`;
-                        const clienteWhatsApp = `https://wa.me/52311063251?text=${encodeURIComponent(mensajeCliente)}`;
+                        const clienteWhatsApp = `https://wa.me/523111063251?text=${encodeURIComponent(mensajeCliente)}`;
                         window.open(clienteWhatsApp, '_blank');
                     }
                 });
